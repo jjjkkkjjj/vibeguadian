@@ -43,13 +43,17 @@ git push origin v0.2.0   # ← これが CI のトリガー
 
 | ターゲット | Runner | 成果物 |
 |---|---|---|
-| `aarch64-apple-darwin` | macos-latest | `vs-vX.X.X-aarch64-apple-darwin.tar.gz` |
-| `x86_64-apple-darwin` | macos-latest | `vs-vX.X.X-x86_64-apple-darwin.tar.gz` |
-| `x86_64-unknown-linux-gnu` | ubuntu-22.04 | `vs-vX.X.X-x86_64-unknown-linux-gnu.tar.gz` |
+| `aarch64-apple-darwin` | macos-latest | `vs-vX.X.X-aarch64-apple-darwin.tar.gz` / `vs-aarch64-apple-darwin.tar.gz` |
+| `x86_64-apple-darwin` | macos-latest | `vs-vX.X.X-x86_64-apple-darwin.tar.gz` / `vs-x86_64-apple-darwin.tar.gz` |
+| `x86_64-unknown-linux-gnu` | ubuntu-22.04 | `vs-vX.X.X-x86_64-unknown-linux-gnu.tar.gz` / `vs-x86_64-unknown-linux-gnu.tar.gz` / `vs-x86_64-linux.deb` |
 | `x86_64-pc-windows-msvc` | windows-latest | `vs-vX.X.X-x86_64-pc-windows-msvc.zip` |
+
+各 Unix ターゲットにはバージョン付き（固定 URL 用）とバージョンなし（`latest` URL 用）の 2 つの tarball をアップロードします。
 
 ビルド完了後、GitHub Release が自動作成され各バイナリが添付されます。
 リリースノートはコミット履歴から自動生成されます（`generate_release_notes: true`）。
+
+全ジョブ完了後、`dispatch-homebrew` ジョブが `jjjkkkjjj/homebrew-vibesafer` リポジトリへ `repository_dispatch` を送信し、Homebrew フォーミュラが自動更新されます（要 `HOMEBREW_TAP_TOKEN` シークレット）。
 
 ---
 

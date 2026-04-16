@@ -20,21 +20,35 @@ Simply wrap your normal command with `vs run -- npm run dev` to create a develop
 
 ## Installation
 
-### Download (recommended)
+### Homebrew (macOS)
+
+```bash
+brew tap jjjkkkjjj/vibesafer
+brew install vibesafer
+```
+
+### apt (Ubuntu / Debian)
+
+```bash
+curl -LO https://github.com/jjjkkkjjj/vibesafer/releases/latest/download/vs-x86_64-linux.deb
+sudo dpkg -i vs-x86_64-linux.deb
+```
+
+### Download (manual)
 
 Download the latest binary from [GitHub Releases](https://github.com/jjjkkkjjj/vibesafer/releases) and place it in your `$PATH`.
 
 ```bash
 # macOS (Apple Silicon)
-curl -L https://github.com/jjjkkkjjj/vibesafer/releases/latest/download/vs-vX.X.X-aarch64-apple-darwin.tar.gz | tar xz
+curl -L https://github.com/jjjkkkjjj/vibesafer/releases/latest/download/vs-aarch64-apple-darwin.tar.gz | tar xz
 sudo mv vs /usr/local/bin/
 
 # macOS (Intel)
-curl -L https://github.com/jjjkkkjjj/vibesafer/releases/latest/download/vs-vX.X.X-x86_64-apple-darwin.tar.gz | tar xz
+curl -L https://github.com/jjjkkkjjj/vibesafer/releases/latest/download/vs-x86_64-apple-darwin.tar.gz | tar xz
 sudo mv vs /usr/local/bin/
 
 # Linux (x86_64)
-curl -L https://github.com/jjjkkkjjj/vibesafer/releases/latest/download/vs-vX.X.X-x86_64-unknown-linux-gnu.tar.gz | tar xz
+curl -L https://github.com/jjjkkkjjj/vibesafer/releases/latest/download/vs-x86_64-unknown-linux-gnu.tar.gz | tar xz
 sudo mv vs /usr/local/bin/
 ```
 
