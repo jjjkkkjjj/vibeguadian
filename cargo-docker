@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# cargo-docker: run any cargo command inside the dev container
+# Usage:
+#   ./cargo-docker build
+#   ./cargo-docker test
+#   ./cargo-docker clippy -- -D warnings
+#   ./cargo-docker run -- -- npm run dev
+set -euo pipefail
+
+docker compose run --rm dev cargo "$@"

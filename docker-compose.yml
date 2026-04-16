@@ -1,0 +1,23 @@
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+      - cargo-registry:/usr/local/cargo/registry
+      - cargo-git:/usr/local/cargo/git
+      - target-cache:/workspace/target
+    environment:
+      - CARGO_TERM_COLOR=always
+    # Keep container alive for devcontainer attach
+    command: sleep infinity
+
+volumes:
+  cargo-registry:
+    name: vibesafer-cargo-registry
+  cargo-git:
+    name: vibesafer-cargo-git
+  target-cache:
+    name: vibesafer-target
