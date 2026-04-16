@@ -1,0 +1,19 @@
+[project]
+name = "vibeguardian-demo"
+default_profile = "dev"
+
+# ── Inject Mode ──────────────────────────────────────────────────────────────
+# MY_API_KEY is resolved from ~/.vibeguard/secrets.json at runtime.
+# This file is 100% safe to commit — the actual key never appears here.
+[env.dev]
+MY_API_KEY = "secret://global/demo/api_key"
+APP_ENV    = "development"
+
+# ── Proxy Mode ───────────────────────────────────────────────────────────────
+[proxy]
+port = 8081
+
+[[proxy.routes]]
+path   = "/proxy/echo"
+target = "http://localhost:9000"
+inject_headers = { X-Api-Key = "${secret://global/demo/api_key}" }
