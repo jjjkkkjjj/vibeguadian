@@ -16,6 +16,42 @@ Simply wrap your normal command with `vg run -- npm run dev` to create a develop
 | **Proxy Mode** | Runs a local reverse proxy (default `:8080`). Requests to `localhost:8080/proxy/stripe` are forwarded to the real API with the `Authorization` header injected invisibly. |
 | **Log Mask Mode** | Hooks child process stdout/stderr in real time, replacing any secret value with `***[MASKED]***` before display. |
 
+### Architecture
+
+```mermaid
+flowchart TB
+    AI["🤖 AI Assistant\n(Cursor / Copilot)"]
+
+    subgraph project["Project Directory  (Git-safe)"]
+        TOML["vibeguard.toml\n(secret:// refs only)"]
+    end
+
+    subgraph store["Global Secret Store  (outside project)"]
+        JSON["~/.vibeguard/secrets.json\n(actual API keys)"]
+    end
+
+    subgraph vg["vibeguardian  (vg run)"]
+        INJ["① Inject Mode\nResolves secret:// → env vars\nStored in child memory only"]
+        PROXY["② Proxy Mode\nlocalhost:8080\nAdds Auth headers invisibly"]
+        MASK["③ Log Mask Mode\nAho-Corasick scanner\nReplaces secrets → ***[MASKED]***"]
+    end
+
+    APP["Your App\n(e.g. npm run dev)"]
+    EXT["External APIs\n(Stripe, OpenAI …)"]
+    TERM["Terminal Output\n(secrets never shown)"]
+
+    AI -- "reads safely" --> TOML
+    AI -. "cannot reach" .-> JSON
+    TOML --> vg
+    JSON --> INJ
+    INJ -- "env vars in RAM\n(never written to disk)" --> APP
+    APP -- "HTTP /proxy/*" --> PROXY
+    PROXY -- "real request\n+ Authorization header" --> EXT
+    APP -- "stdout / stderr" --> MASK
+    MASK --> TERM
+    AI -. "sees only ***MASKED***" .-> TERM
+```
+
 ---
 
 ## Installation

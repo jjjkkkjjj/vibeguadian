@@ -108,7 +108,7 @@ git push origin v0.2.0   # ← これが CI のトリガー
 ビルド完了後、GitHub Release が自動作成され各バイナリが添付されます。
 リリースノートはコミット履歴から自動生成されます（`generate_release_notes: true`）。
 
-全ジョブ完了後、`dispatch-homebrew` ジョブが `jjjkkkjjj/homebrew-vibesafer` リポジトリへ `repository_dispatch` を送信し、Homebrew フォーミュラが自動更新されます（要 `HOMEBREW_TAP_TOKEN` シークレット）。
+全ジョブ完了後、`dispatch-homebrew` ジョブが `jjjkkkjjj/homebrew-vibeguardian` リポジトリへ `repository_dispatch` を送信し、Homebrew フォーミュラが自動更新されます（要 `HOMEBREW_TAP_TOKEN` シークレット）。
 
 ---
 

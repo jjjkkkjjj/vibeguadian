@@ -16,6 +16,42 @@ English documentation: [README.md](README.md)
 | **Proxy Mode** | ローカルでリバースプロキシ（デフォルト `:8080`）を起動し、AIが生成したコードの `localhost:8080/proxy/stripe` 宛てリクエストに `Authorization` ヘッダを裏で付与して転送。 |
 | **Log Mask Mode** | 子プロセスの stdout/stderr をリアルタイムでフックし、シークレット文字列が含まれていれば `***[MASKED]***` に置換して表示。 |
 
+### アーキテクチャ
+
+```mermaid
+flowchart TB
+    AI["🤖 AIアシスタント\n(Cursor / Copilot)"]
+
+    subgraph project["プロジェクトディレクトリ（Gitコミット可）"]
+        TOML["vibeguard.toml\n(secret:// 参照のみ)"]
+    end
+
+    subgraph store["グローバルシークレットストア（プロジェクト外）"]
+        JSON["~/.vibeguard/secrets.json\n(実際のAPIキー)"]
+    end
+
+    subgraph vg["vibeguardian（vg run）"]
+        INJ["① Inject Mode\nsecret:// を解決 → 環境変数\n子プロセスのメモリにのみ展開"]
+        PROXY["② Proxy Mode\nlocalhost:8080\nAuthヘッダーを裏で付与"]
+        MASK["③ Log Mask Mode\nAho-Corasickスキャナー\nシークレットを ***[MASKED]*** に置換"]
+    end
+
+    APP["あなたのアプリ\n(例: npm run dev)"]
+    EXT["外部API\n(Stripe, OpenAI …)"]
+    TERM["ターミナル出力\n(シークレットは表示されない)"]
+
+    AI -- "読める（安全）" --> TOML
+    AI -. "アクセス不可" .-> JSON
+    TOML --> vg
+    JSON --> INJ
+    INJ -- "環境変数はRAM上のみ\n（ディスクに書き出さない）" --> APP
+    APP -- "HTTP /proxy/*" --> PROXY
+    PROXY -- "実リクエスト\n+ Authorizationヘッダー" --> EXT
+    APP -- "stdout / stderr" --> MASK
+    MASK --> TERM
+    AI -. "***MASKED*** しか見えない" .-> TERM
+```
+
 ---
 
 ## インストール

@@ -5,16 +5,16 @@
 ### 基本コマンドツリー
 
 ```bash
-vs [OPTIONS] <COMMAND>
+vg [OPTIONS] <COMMAND>
 
 Commands:
-  run     [主機能] 指定したコマンドをVibesafe環境下（注入・プロキシ・マスク有効）で実行する
-  init    現在のディレクトリに vibesafe.toml を生成する
-  set     グローバル領域（~/.vibesafe）にシークレットを安全に登録する
+  run     [主機能] 指定したコマンドをVibeguard環境下（注入・プロキシ・マスク有効）で実行する
+  init    現在のディレクトリに vibeguard.toml を生成する
+  set     グローバル領域（~/.vibeguard）にシークレットを安全に登録する
   status  現在のディレクトリのプロキシ稼働状況や注入予定のキー一覧（マスク済）を確認する
 ```
 
-### `vs run` の設計（コア機能）
+### `vg run` の設計（コア機能）
 
 `clap` で実装する場合、アプリの実行コマンド（`npm run dev` など）を残りの引数として丸ごと受け取るために `TrailingVarArg` パターンを使います。
 
@@ -42,24 +42,24 @@ struct RunArgs {
 
 **実際の使用感:**
 ```bash
-$ vs run -- npm run dev
-[Vibesafe] 🚀 Proxy started at localhost:8080
-[Vibesafe] 💉 Injected 3 env vars (Profile: dev)
-[Vibesafe] 🛡️ Log masking enabled
+$ vg run -- npm run dev
+[Vibeguard] 🚀 Proxy started at localhost:8080
+[Vibeguard] 💉 Injected 3 env vars (Profile: dev)
+[Vibeguard] 🛡️ Log masking enabled
 > next dev
 ...
 ```
 
 ---
 
-## 2. `vibesafe.toml` の設計（プロジェクト設定）
+## 2. `vibeguard.toml` の設計（プロジェクト設定）
 
 このファイルはプロジェクトルートに置き、**Gitにコミットしても、CursorなどのAIに読み込ませても100%安全**な設計にします。実際のキー（値）は一切持たず、「どのキーをどこに差し込むか」という**ポインタ（参照）**だけを記述します。
 
 ### 設定ファイルの実例
 
 ```toml
-# vibesafe.toml
+# vibeguard.toml
 [project]
 name = "my-awesome-app"
 default_profile = "dev"
@@ -92,7 +92,7 @@ inject_headers = { Authorization = "Bearer ${secret://global/openai/api_key}" }
 
 ### なぜこれがAI対策として完璧なのか？
 
-AIエージェントがこの `vibesafe.toml` を読み込むと、以下のように振る舞います。
+AIエージェントがこの `vibeguard.toml` を読み込むと、以下のように振る舞います。
 
 * **AIの思考:** 「なるほど、このプロジェクトはDBに繋ぐために `DATABASE_URL` が必要なんだな。そしてStripe APIを叩く時は `http://localhost:8080/proxy/stripe` にリクエストを送ればいいんだな。よし、その通りにコードを書こう！」
 * **結果:** AIは自律的に正しいコード（Prismaのスキーマ設定や、fetchの宛先など）を書き上げます。しかし、AI自身は `secret://global/stripe/secret_key` の中身（本当のAPIキー）を知らないため、外部への情報漏洩や、ターミナルログからのキー流出は物理的に起こり得ません。
